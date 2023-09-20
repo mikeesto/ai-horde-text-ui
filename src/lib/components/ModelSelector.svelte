@@ -1,6 +1,6 @@
 <script>
 	import { onMount } from 'svelte';
-	import { badModels } from '$lib/data/badModels.js';
+	import { badModels } from '$lib/data/badmodels.js';
 
 	let models = [];
 	export let selectedModel = '';
