@@ -6,7 +6,7 @@
 	export let selectedModel = '';
 
 	onMount(async () => {
-		const response = await fetch('https://horde.koboldai.net/api/v2/status/models?type=text');
+		const response = await fetch('https://stablehorde.net/api/v2/status/models?type=text');
 		const data = await response.json();
 		const sortedModels = data
 			.sort((a, b) => b.count - a.count)
