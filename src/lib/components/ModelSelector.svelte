@@ -19,6 +19,12 @@
 		}));
 		selectedModel = models[0].name;
 	});
+
+	const generateSearchURL = (model) => {
+		const splitModel = model.split('/');
+		const name = splitModel[splitModel.length - 1];
+		return `https://huggingface.co/models?search=${name}`;
+	};
 </script>
 
 <h4 class="h4 mb-2">Select Model</h4>
@@ -29,7 +35,7 @@
 		{/each}
 	</select>
 	<a
-		href={`https://huggingface.co/models?search=${selectedModel}`}
+		href={generateSearchURL(selectedModel)}
 		target="_blank"
 		rel="noopener noreferrer"
 		class="btn variant-filled">Hugging Face</a
