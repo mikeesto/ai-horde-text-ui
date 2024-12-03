@@ -1,3 +1,5 @@
 # AI Horde Text UI
 
-A web UI for interacting with the AI Horde's text generation models
+The [AI Horde](https://stablehorde.net/) is a crowdsourced distributed cluster of text generation workers.
+
+This is a web UI built with SvelteKit for interacting with the AI Horde's text generation models.
