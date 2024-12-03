@@ -1,19 +1,37 @@
-<script>
+<script lang="ts">
 	import { onMount } from 'svelte';
 	import { badModels } from '$lib/data/badmodels.js';
 
-	export let selectedModel = '';
-	let models = [];
-	let loading = true;
-	let error = null;
+	interface RawModel {
+		name: string;
+		count: number;
+		eta: number;
+		type: string;
+	}
 
-	async function fetchModels() {
+	interface ProcessedModel {
+		name: string;
+		count: number;
+		eta: number;
+		category: string;
+	}
+
+	interface ModelsByCategory {
+		[key: string]: ProcessedModel[];
+	}
+
+	export let selectedModel: string = '';
+	let models: ProcessedModel[] = [];
+	let loading: boolean = true;
+	let error: string | null = null;
+
+	async function fetchModels(): Promise<void> {
 		loading = true;
 		error = null;
 		try {
 			const response = await fetch('https://stablehorde.net/api/v2/status/models?type=text');
 			if (!response.ok) throw new Error('Failed to fetch models');
-			const data = await response.json();
+			const data: RawModel[] = await response.json();
 
 			models = data
 				.sort((a, b) => b.count - a.count)
@@ -37,13 +55,13 @@
 
 	onMount(fetchModels);
 
-	$: modelsByCategory = models.reduce((acc, model) => {
+	$: modelsByCategory = models.reduce<ModelsByCategory>((acc, model) => {
 		if (!acc[model.category]) acc[model.category] = [];
 		acc[model.category].push(model);
 		return acc;
 	}, {});
 
-	const generateSearchURL = (model) => {
+	const generateSearchURL = (model: string): string => {
 		const splitModel = model.split('/');
 		const name = splitModel[splitModel.length - 1];
 		return `https://huggingface.co/models?search=${name}`;
