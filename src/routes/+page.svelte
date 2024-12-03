@@ -108,6 +108,10 @@
 			loading = false;
 		}
 	}
+
+	function resetChat() {
+		chats = [];
+	}
 </script>
 
 <div class="mt-2 md:max-w-2xl mx-auto">
@@ -120,20 +124,23 @@
 
 		<ModelSelector bind:selectedModel />
 
-		<Accordion class="mt-4">
-			<AccordionItem>
-				<svelte:fragment slot="lead">⚙️</svelte:fragment>
-				<svelte:fragment slot="summary">System Prompt</svelte:fragment>
-				<svelte:fragment slot="content">
-					<textarea
-						class="textarea resize-none w-full"
-						rows="2"
-						placeholder="Enter a system prompt..."
-						bind:value={systemPrompt}
-					/>
-				</svelte:fragment>
-			</AccordionItem>
-		</Accordion>
+		<div class="flex items-center gap-2 mt-4">
+			<Accordion class="flex-1">
+				<AccordionItem>
+					<svelte:fragment slot="lead">⚙️</svelte:fragment>
+					<svelte:fragment slot="summary">System Prompt</svelte:fragment>
+					<svelte:fragment slot="content">
+						<textarea
+							class="textarea resize-none w-full"
+							rows="2"
+							placeholder="Enter a system prompt..."
+							bind:value={systemPrompt}
+						/>
+					</svelte:fragment>
+				</AccordionItem>
+			</Accordion>
+			<button class="btn variant-soft-error" on:click={resetChat}>Reset Chat</button>
+		</div>
 
 		{#if error}
 			<div class="alert variant-filled-error my-2">{error}</div>
