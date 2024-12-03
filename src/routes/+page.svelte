@@ -2,9 +2,11 @@
 	import ModelSelector from '$lib/components/ModelSelector.svelte';
 	import { tick } from 'svelte';
 
-	let chats: { message: string; from: 'user' | 'bot' }[] = [];
+	let chats: { message: string; from: 'user' | 'assistant' }[] = [];
 	let userMessage = '';
 	let selectedModel = '';
+	let systemPrompt =
+		'You are an AI that follows instructions extremely well. Help as much as you can.';
 	let chatSection: HTMLElementTagNameMap['section'];
 	let loading = false;
 
@@ -18,6 +20,19 @@
 		await tick();
 		node.scroll({ top: node.scrollHeight, behavior: 'smooth' });
 	};
+
+	function generatePrompt() {
+		// Note: This is a very generic prompt template, not specific to any model.
+		let prompt = `System: ${systemPrompt}`;
+		for (const chat of chats) {
+			if (chat.from === 'user') {
+				prompt += `\nUser: ${chat.message}`;
+			} else {
+				prompt += `\nAssistant: ${chat.message}`;
+			}
+		}
+		return prompt;
+	}
 
 	async function sendMessage() {
 		if (loading || !userMessage || !selectedModel) return;
@@ -35,10 +50,10 @@
 			},
 			body: JSON.stringify({
 				models: [selectedModel],
-				prompt: `###Instruction:\n${userMessage}\n### Response:\n`,
+				prompt: generatePrompt(),
 				params: {
-					max_context_length: 1024, // required
-					max_length: 80 // required
+					max_context_length: 2048,
+					max_length: 512
 				}
 			})
 		}).then((res) => res.json());
@@ -52,7 +67,7 @@
 
 			if (done) {
 				clearInterval(interval);
-				chats = [...chats, { message: generations[0].text, from: 'bot' }];
+				chats = [...chats, { message: generations[0].text, from: 'assistant' }];
 				loading = false;
 				scrollToBottom(chatSection);
 			}
@@ -65,9 +80,12 @@
 		<ModelSelector bind:selectedModel />
 		<label class="label">
 			<h4 class="h4 mb-2 mt-2">System Prompt</h4>
-			<textarea class="textarea resize-none" rows="2" placeholder="Enter some long form content."
-				>You are an AI that follows instructions extremely well. Help as much as you can.</textarea
-			>
+			<textarea
+				class="textarea resize-none"
+				rows="2"
+				placeholder="Enter a system prompt..."
+				bind:value={systemPrompt}
+			/>
 		</label>
 		<form
 			on:submit|preventDefault={sendMessage}
